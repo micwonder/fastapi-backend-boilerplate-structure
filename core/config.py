@@ -10,8 +10,8 @@ class Config(BaseSettings):
     DEBUG: bool = True
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
-    WRITER_DB_URL: str = "sqlite:///{db_file_path}"
-    READER_DB_URL: str = "sqlite:///{db_file_path}"
+    WRITER_DB_URL: str = "aiosqlite:///{db_file_path}"
+    READER_DB_URL: str = "aiosqlite:///{db_file_path}"
     JWT_SECRET_KEY: str = "easyric"
     JWT_ALGORITHM: str = "HS256"
     SENTRY_SDN: str = None
@@ -22,21 +22,21 @@ class Config(BaseSettings):
 
 
 class DevelopmentConfig(Config):
-    WRITER_DB_URL: str = "sqlite:///{db_file_path}"
-    READER_DB_URL: str = "sqlite:///{db_file_path}"
+    WRITER_DB_URL: str = "aiosqlite:///{db_file_path}"
+    READER_DB_URL: str = "aiosqlite:///{db_file_path}"
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
 
 
 class LocalConfig(Config):
-    WRITER_DB_URL: str = "sqlite:///{db_file_path}"
-    READER_DB_URL: str = "sqlite:///{db_file_path}"
+    WRITER_DB_URL: str = "aiosqlite:///{db_file_path}"
+    READER_DB_URL: str = "aiosqlite:///{db_file_path}"
 
 
 class ProductionConfig(Config):
     DEBUG: str = False
-    WRITER_DB_URL: str = "sqlite:///{db_file_path}"
-    READER_DB_URL: str = "sqlite:///{db_file_path}"
+    WRITER_DB_URL: str = "aiosqlite:///{db_file_path}"
+    READER_DB_URL: str = "aiosqlite:///{db_file_path}"
 
 
 def get_config():
