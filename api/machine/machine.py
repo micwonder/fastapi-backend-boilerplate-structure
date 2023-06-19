@@ -45,13 +45,26 @@ async def add_machine(
     responses={"404": {"model": ExceptionResponseSchema}},
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
 )
-async def update_product(
+async def update_machine(
     id: int,
     request: UpdateMachineRequest,
     background_tasks: BackgroundTasks,
     accept_language: Optional[str] = Header(None),
 ):
     response = await MachineService().update_machine(id=id, **request.dict(), background_tasks=background_tasks, accept_language=accept_language)
+    return response
+
+@machine_router.delete(
+    "/{id}",
+    response_model=None,
+    responses={"404": {"model": ExceptionResponseSchema}},
+)
+async def delete_machine(
+    id: int,
+    background_tasks: BackgroundTasks,
+    accept_language: Optional[str] = Header(None),
+):
+    response = await MachineService().delete_machine(id=id, background_tasks=background_tasks, accept_language=accept_language)
     return response
 
 @machine_router.get(
