@@ -8,7 +8,7 @@ class TimestampMixin:
         return Column(DateTime, default=func.now(), nullable=False)
 
     @declared_attr
-    def updated_at(cls):
+    def edited_at(cls):
         return Column(
             DateTime,
             default=func.now(),
