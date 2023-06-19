@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from api import router
-from api.home.home import home_router
 from core.config import config
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
@@ -20,7 +19,6 @@ from core.helpers.cache import Cache, RedisBackend, CustomKeyMaker
 
 
 def init_routers(app_: FastAPI) -> None:
-    app_.include_router(home_router)
     app_.include_router(router)
 
 
@@ -76,8 +74,8 @@ def create_app() -> FastAPI:
         title="Assessment",
         description="August API",
         version="1.0.0",
-        docs_url=None if config.ENV == "production" else "/docs",
-        redoc_url=None if config.ENV == "production" else "/redoc",
+        docs_url=None if config.ENV == "production" else "/assessment/docs",
+        redoc_url=None if config.ENV == "production" else "/assessment/redoc",
         dependencies=[Depends(Logging)],
         middleware=make_middleware(),
     )

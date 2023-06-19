@@ -69,4 +69,5 @@ async def get_machine_list(
     ts = datetime.utcnow()
     response = await MachineService().get_machine_list(id=id, email=email, accept_language=accept_language)
     consumed = math.ceil((datetime.utcnow().timestamp()-ts.timestamp())*1000)
-    response["consumed"] = f"Finished in {consumed}ms"
+    print (f"Finished in {consumed}ms")
+    return response
