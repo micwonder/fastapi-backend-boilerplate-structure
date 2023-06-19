@@ -2,14 +2,16 @@ import os
 
 from pydantic import BaseSettings
 
+current_dir = os.path.dirname(os.path.abspath(__file__))
+db_file_path = os.path.join(current_dir, "assessment.db")
 
 class Config(BaseSettings):
     ENV: str = "development"
     DEBUG: bool = True
     APP_HOST: str = "0.0.0.0"
     APP_PORT: int = 8000
-    WRITER_DB_URL: str = f"mysql+aiomysql://merchant2easyric_root:easyriceasyric@localhost:3306/merchant2easyric_easyric"
-    READER_DB_URL: str = f"mysql+aiomysql://merchant2easyric_root:easyriceasyric@localhost:3306/merchant2easyric_easyric"
+    WRITER_DB_URL: str = "sqlite:///{db_file_path}"
+    READER_DB_URL: str = "sqlite:///{db_file_path}"
     JWT_SECRET_KEY: str = "easyric"
     JWT_ALGORITHM: str = "HS256"
     SENTRY_SDN: str = None
@@ -20,21 +22,21 @@ class Config(BaseSettings):
 
 
 class DevelopmentConfig(Config):
-    WRITER_DB_URL: str = f"mysql+aiomysql://merchant2easyric_root:easyriceasyric@localhost:3306/merchant2easyric_easyric"
-    READER_DB_URL: str = f"mysql+aiomysql://merchant2easyric_root:easyriceasyric@localhost:3306/merchant2easyric_easyric"
+    WRITER_DB_URL: str = "sqlite:///{db_file_path}"
+    READER_DB_URL: str = "sqlite:///{db_file_path}"
     REDIS_HOST: str = "redis"
     REDIS_PORT: int = 6379
 
 
 class LocalConfig(Config):
-    WRITER_DB_URL: str = f"mysql+aiomysql://merchant2easyric_root:easyriceasyric@localhost:3306/merchant2easyric_easyric"
-    READER_DB_URL: str = f"mysql+aiomysql://merchant2easyric_root:easyriceasyric@localhost:3306/merchant2easyric_easyric"
+    WRITER_DB_URL: str = "sqlite:///{db_file_path}"
+    READER_DB_URL: str = "sqlite:///{db_file_path}"
 
 
 class ProductionConfig(Config):
     DEBUG: str = False
-    WRITER_DB_URL: str = f"mysql+aiomysql://root:123456@localhost:3306/easyric"
-    READER_DB_URL: str = f"mysql+aiomysql://root:123456@localhost:3306/easyric"
+    WRITER_DB_URL: str = "sqlite:///{db_file_path}"
+    READER_DB_URL: str = "sqlite:///{db_file_path}"
 
 
 def get_config():
