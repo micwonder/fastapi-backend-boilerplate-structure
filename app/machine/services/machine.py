@@ -1,12 +1,16 @@
 import json
 import random
 import string
+import secrets
+
 from typing import List, Optional
 from fastapi import BackgroundTasks
 
 # Migrate to other file
 
-from sqlalchemy import and_, select
+from sqlalchemy import and_, or_, select
+
+from core.exceptions import DuplicateValueException
 
 from ..models import Machine
 # from core.exceptions import CustomException, ForbiddenException, NotFoundException
@@ -22,16 +26,32 @@ class MachineService:
         self,
         id: int,
         email: str,
+        page: int,
+        size: int,
+        order_by: str,
+        desc: bool,
         accept_language: Optional[str],
     ) -> List[Machine]:
         email = validation(email=email, is_essential=False)
-        query = select(Machine)
-        if id:
-            query = query.where(Machine.id==id)
-        elif email:
-            query = query.where(Machine.email==email)
-        result = await session.execute(query)
-        machines = result.scalars().all()
+        try:
+            if size > 100:
+                size = 100
+            query = select(Machine)
+            if id:
+                query = query.where(Machine.id==id)
+            elif email:
+                query = query.where(Machine.email==email)
+            offset = page*size
+            if desc:
+                query = query.order_by(getattr(Machine, order_by).desc())
+            else:
+                query = query.order_by(getattr(Machine, order_by))
+            query = query.offset(offset=offset).limit(size)
+            result = await session.execute(query)
+            machines = result.scalars().all()
+        except Exception as e:
+            print (e.args[0])
+            machines = []
         return machines
 
     async def add_machine(
@@ -45,8 +65,14 @@ class MachineService:
         accept_language: Optional[str],
     ) -> dict:
         email = validation(email=email)
+        number += ('-' + ''.join(secrets.choice(string.ascii_letters + string.digits) for i in range(40)))
+        query = select(Machine).where(or_(Machine.email==email, Machine.number==number))
+        result = await session.execute(query)
+        machine = result.first()
+        if machine:
+            raise DuplicateValueException(message="This email or machine number exists")
         background_tasks.add_task(self.task_add_machine, name, location, email, number, enum)
-        response = { "success": True, "message": "Machine has been updated successfully" }
+        response = { "success": True, "message": "Machine has been added successfully" }
         return response
     
     async def update_machine(
@@ -71,7 +97,13 @@ class MachineService:
         enum: bool,
     ):
         try:
-            machine = Machine(name=name, location=location, email=email, number=number, enum=enum)
+            machine = Machine(
+                name=name,
+                location=location,
+                email=email,
+                number=number,
+                enum=enum,
+            )
             session.add(machine)
             print ("Machine has been added successfully")
         except Exception as e:

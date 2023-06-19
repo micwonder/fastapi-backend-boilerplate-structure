@@ -8,7 +8,7 @@ class GetMachineListResponseSchema(BaseModel):
     location: str = Field(..., description="location")
     email: str = Field(..., description="email")
     number: str = Field(..., description="number")
-    enum: str = Field(..., description="enum")
+    enum: bool = Field(..., description="enum")
 
     class Config:
         orm_mode = True

@@ -57,17 +57,21 @@ async def update_product(
 @machine_router.get(
     "/get",
     response_model=List[GetMachineListResponseSchema],
-    response_model_exclude={"id"},
+    # response_model_exclude={"id"},
     responses={"400": {"model": ExceptionResponseSchema}},
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
 )
 async def get_machine_list(
     id: int = Query(None, description="Machine Id"),
     email: str = Query(None, description="Email"),
+    page: int = Query(0, description="Page Number"),
+    size: int = Query(10, description="Size"),
+    order_by: str = Query("id", description="Sort by spec field"),
+    desc: bool = Query(False, description="Descending order"),
     accept_language: Optional[str] = Header(None),
 ):
     ts = datetime.utcnow()
-    response = await MachineService().get_machine_list(id=id, email=email, accept_language=accept_language)
+    response = await MachineService().get_machine_list(id=id, email=email, page=page, size=size, order_by=order_by, desc=desc, accept_language=accept_language)
     consumed = math.ceil((datetime.utcnow().timestamp()-ts.timestamp())*1000)
     print (f"Finished in {consumed}ms")
     return response
