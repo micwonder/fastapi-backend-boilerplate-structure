@@ -110,6 +110,16 @@ class MachineService:
         response = { "success": True, "message": "Machine has been updated successfully" }
         return response
     
+    async def delete_machine(
+        self,
+        id: int,
+        background_tasks: BackgroundTasks,
+        accept_language: Optional[str],
+    ) -> dict:
+        background_tasks.add_task(self.task_delete_machine, id)
+        response = { "success": True, "message": "Machine has been deleted successfully" }
+        return response
+    
     @Transactional()
     async def task_add_machine(
         self,
@@ -149,5 +159,22 @@ class MachineService:
                 machine.name = name if name else machine.name
                 machine.location = location if location else machine.location
                 print ("Machine has been updated successfully")
+        except Exception as e:
+            print (e.args[0])
+    
+    @Transactional()
+    async def task_delete_machine(
+        self,
+        id: int,
+    ):
+        try:
+            query = select(Machine).where(Machine.id==id)
+            result = await session.execute(query)
+            machine = result.scalars().first()
+            if not machine:
+                print ("Machine not found")
+            else:
+                await session.delete(machine)
+                print ("Machine has been deleted successfully")
         except Exception as e:
             print (e.args[0])
