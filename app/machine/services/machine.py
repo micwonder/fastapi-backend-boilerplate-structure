@@ -71,8 +71,31 @@ class MachineService:
         machine = result.first()
         if machine:
             raise DuplicateValueException(message="This email or machine number exists")
-        background_tasks.add_task(self.task_add_machine, name, location, email, number, enum)
-        response = { "success": True, "message": "Machine has been added successfully" }
+        # background_tasks.add_task(self.task_add_machine, name, location, email, number, enum)
+        try:
+            machine = Machine(
+                name=name,
+                location=location,
+                email=email,
+                number=number,
+                enum=enum,
+            )
+            session.add(machine)
+            await session.flush()
+            print ("Machine has been added successfully")
+        except Exception as e:
+            print (e.args[0])
+        response = {
+            "success": True,
+            "message": "Machine has been added successfully",
+            "machine_info": {
+                "id": machine.id,
+                "name": machine.name,
+                "location": machine.location,
+                "email": machine.email,
+                "number": machine.number,
+                "enum": machine.enum,
+        } }
         return response
     
     async def update_machine(
