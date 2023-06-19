@@ -13,3 +13,4 @@ redis
 python-multipart
 bcrypt
 pydantic
+aiomysql
