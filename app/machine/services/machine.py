@@ -8,7 +8,7 @@ from fastapi import BackgroundTasks
 
 from sqlalchemy import and_, select
 
-from app.machine.models import Machine
+from ..models import Machine
 # from core.exceptions import CustomException, ForbiddenException, NotFoundException
 from core.db import Transactional, session
 from utils.validator import validation
@@ -20,10 +20,20 @@ class MachineService:
 
     async def get_machine_list(
         self,
+        id: int,
+        email: str,
+        accept_language: Optional[str],
     ) -> List[Machine]:
-        ...
+        email = validation(email=email, is_essential=False)
+        query = select(Machine)
+        if id:
+            query = query.where(Machine.id==id)
+        elif email:
+            query = query.where(Machine.email==email)
+        result = await session.execute(query)
+        machines = result.scalars().all()
+        return machines
 
-    @Transactional()
     async def add_machine(
         self,
         name: str,
@@ -34,12 +44,11 @@ class MachineService:
         background_tasks: BackgroundTasks,
         accept_language: Optional[str],
     ) -> dict:
-        validation(email=email)
+        email = validation(email=email)
         background_tasks.add_task(self.task_add_machine, name, location, email, number, enum)
         response = { "success": True, "message": "Machine has been updated successfully" }
         return response
     
-    @Transactional()
     async def update_machine(
         self,
         id: int,
@@ -48,10 +57,11 @@ class MachineService:
         background_tasks: BackgroundTasks,
         accept_language: Optional[str],
     ) -> dict:
-        background_tasks.add_task(self.task_update_machine, name, location)
+        background_tasks.add_task(self.task_update_machine, id, name, location)
         response = { "success": True, "message": "Machine has been updated successfully" }
         return response
     
+    @Transactional()
     async def task_add_machine(
         self,
         name: str,
@@ -61,16 +71,28 @@ class MachineService:
         enum: bool,
     ):
         try:
+            machine = Machine(name=name, location=location, email=email, number=number, enum=enum)
+            session.add(machine)
             print ("Machine has been added successfully")
         except Exception as e:
             print (e.args[0])
 
+    @Transactional()
     async def task_update_machine(
         self,
+        id: int,
         name: str,
         location: str,
     ):
         try:
-            print ("Machine has been updated successfully")
+            query = select(Machine).where(Machine.id==id)
+            result = await session.execute(query)
+            machine = result.scalars().first()
+            if not machine:
+                print ("Machine not found")
+            else:
+                machine.name = name if name else machine.name
+                machine.location = location if location else machine.location
+                print ("Machine has been updated successfully")
         except Exception as e:
             print (e.args[0])
