@@ -25,7 +25,7 @@ machine_router = APIRouter()
 
 ############### Getting name, location, email, number, enum (active/not active), createat_at and edited_at ###############
 @machine_router.post(
-    "/create",
+    "",
     response_model=None,
     responses={"400": {"model": ExceptionResponseSchema}},
     # dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
@@ -68,7 +68,7 @@ async def delete_machine(
     return response
 
 @machine_router.get(
-    "/get",
+    "",
     response_model=List[GetMachineListResponseSchema],
     # response_model_exclude={"id"},
     responses={"400": {"model": ExceptionResponseSchema}},
