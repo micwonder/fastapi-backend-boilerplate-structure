@@ -73,8 +73,8 @@ def init_cache() -> None:
 
 def create_app() -> FastAPI:
     app_ = FastAPI(
-        title="Hide",
-        description="Hide API",
+        title="Assessment",
+        description="August API",
         version="1.0.0",
         docs_url=None if config.ENV == "production" else "/docs",
         redoc_url=None if config.ENV == "production" else "/redoc",

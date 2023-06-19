@@ -1,0 +1,15 @@
+requests
+alembic
+SQLAlchemy
+PyJWT
+uvicorn
+fastapi
+gunicorn
+fastapi-event
+pythondi
+click
+greenlet
+redis
+python-multipart
+bcrypt
+pydantic
