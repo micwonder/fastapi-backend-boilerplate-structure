@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Query
+from app.machine.models import Machine
 
 from app.machine.services import MachineService
 from app.machine.schemas import (
@@ -17,6 +18,23 @@ from datetime import datetime
 
 machine_router = APIRouter()
 
+############### Schema ###############
+@machine_router.post(
+    "/schema/{category}",
+    response_model=None,
+    responses={"400": {"model": ExceptionResponseSchema}},
+)
+async def get_schema(
+    category: str,
+):
+    print ("get schema request")
+    try:
+        machine_schema = eval(category)()
+        response = {k: str(type(v)) for k, v in machine_schema.__dict__.items() if not k.startswith('_')}
+    except Exception as e:
+        return { "success": False, "message": e.args[0] }
+    print ("get schema success")
+    return { "success": True, "message": f"Get {category} schema successfully", "info": response }
 
 ############### Getting name, location, email, number, enum (active/not active), createat_at and edited_at ###############
 @machine_router.post(

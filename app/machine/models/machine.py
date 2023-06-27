@@ -13,3 +13,11 @@ class Machine(Base, TimestampMixin):
     email = Column(String(50), nullable=False, unique=True)
     number = Column(String(200), nullable=False, unique=True)
     enum = Column(Boolean, nullable=False, default=False)
+
+    def __init__ (self):
+        self.id = 0
+        self.name = ""
+        self.location = ""
+        self.email = ""
+        self.number = ""
+        self.enum = True
