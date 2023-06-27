@@ -29,7 +29,14 @@ async def get_schema(
 ):
     print ("get schema request")
     try:
-        machine_schema = eval(category)()
+        machine_schema = eval(category)(
+            id = 0,
+            name = "",
+            location = "",
+            email = "",
+            number = "",
+            enum = True
+        )
         response = {k: str(type(v)) for k, v in machine_schema.__dict__.items() if not k.startswith('_')}
     except Exception as e:
         return { "success": False, "message": e.args[0] }

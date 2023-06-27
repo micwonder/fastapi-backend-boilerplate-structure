@@ -7,7 +7,7 @@ from typing import List
 
 from sqlalchemy import or_, select
 
-from core.exceptions import DuplicateValueException, NotFoundException
+from core.exceptions import DuplicateValueException, NotFoundException, UnprocessableEntity
 
 from ..models import Machine
 from core.db import Transactional, session
@@ -77,7 +77,8 @@ class MachineService:
             await session.flush()
             print ("Machine has been added successfully")
         except Exception as e:
-            print (e.args[0])
+            raise e
+            # raise UnprocessableEntity(message=e)
         response = {
             "success": True,
             "message": "Machine has been added successfully",
